@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lw.mapper.ProductMapper">
+    <resultMap id="BaseResultMap" type="cn.lw.domain.Product">
+        <id column="product_id" jdbcType="INTEGER" property="productId"/>
+        <result column="product_name" jdbcType="VARCHAR" property="productName"/>
+        <result column="product_desc" jdbcType="VARCHAR" property="productDesc"/>
+        <result column="img_addr" jdbcType="VARCHAR" property="imgAddr"/>
+        <result column="normal_price" jdbcType="VARCHAR" property="normalPrice"/>
+        <result column="promotion_price" jdbcType="VARCHAR" property="promotionPrice"/>
+        <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="last_edit_time" jdbcType="TIMESTAMP" property="lastEditTime"/>
+        <result column="enable_status" jdbcType="INTEGER" property="enableStatus"/>
+        <result column="product_category_id" jdbcType="INTEGER" property="productCategory.productCategoryId"/>
+        <result column="shop_id" jdbcType="INTEGER" property="shop.shopId"/>
+        <association property="shop" column="shop_id" javaType="Shop">
+            <id column="shop_id" property="shopId"/>
+            <result column="shop_name" property="shopName"/>
+            <result column="owner_id" property="owner.userId"/>
+        </association>
+        <association property="productCategory" column="product_category_id" javaType="ProductCategory">
+            <id column="product_category_id" property="productCategoryId"/>
+            <result property="productCategoryName" column="product_category_name"/>
+        </association>
+        <collection property="productImgList" column="product_id" ofType="ProductImg">
+            <id column="product_img_id" property="productImgId"/>
+            <result column="priority" property="priority"/>
+            <result column="img_desc" property="imgDesc"/>
+            <result column="create_time" property="createTime"/>
+            <result column="xqimg" property="imgAddr"/>
+            <result column="category_product_id" property="productId"/>
+        </collection>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tb_product
+        where product_id = #{productId,jdbcType=INTEGER}
+    </delete>
+    <update id="updateByPrimaryKey" parameterType="cn.lw.domain.Product"
+            useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
+        update tb_product
+        <set>
+            <if test="productName!=null">product_name = #{productName,jdbcType=VARCHAR},</if>
+            <if test="productDesc!=null">product_desc = #{productDesc,jdbcType=VARCHAR},</if>
+            <if test="imgAddr!=null">img_addr = #{imgAddr,jdbcType=VARCHAR},</if>
+            <if test="normalPrice!=null">normal_price = #{normalPrice,jdbcType=VARCHAR},</if>
+            <if test="promotionPrice!=null">promotion_price = #{promotionPrice,jdbcType=VARCHAR},</if>
+            <if test="priority!=null">priority = #{priority,jdbcType=INTEGER},</if>
+            <if test="lastEditTime!=null">last_edit_time = #{lastEditTime,jdbcType=TIMESTAMP},</if>
+            <if test="enableStatus!=null">enable_status = #{enableStatus,jdbcType=INTEGER},</if>
+            <if test="productCategory!=null and productCategory.productCategoryId!=null">
+                product_category_id = #{productCategory.productCategoryId,jdbcType=INTEGER},
+            </if>
+            <if test="shop!=null and shop.shopId!=null">
+                shop_id = #{shop.shopId,jdbcType=INTEGER}
+            </if>
+        </set>
+        where product_id = #{productId,jdbcType=INTEGER} and shop_id=#{shop.shopId}
+    </update>
+    <update id="updateProductCategory2Null">
+        update tb_product
+        set
+        product_category_id = null
+        where product_category_id=#{productCategoryId}
+    </update>
+    <insert id="insert" parameterType="cn.lw.domain.Product"
+            useGeneratedKeys="true" keyColumn="product_id" keyProperty="productId">
+        insert into tb_product (product_name, product_desc,
+                                img_addr, normal_price, promotion_price,
+                                priority, create_time, last_edit_time,
+                                enable_status, product_category_id, shop_id
+        )
+        values (#{productName,jdbcType=VARCHAR}, #{productDesc,jdbcType=VARCHAR},
+            #{imgAddr,jdbcType=VARCHAR}, #{normalPrice,jdbcType=VARCHAR}, #{promotionPrice,jdbcType=VARCHAR},
+            #{priority,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{lastEditTime,jdbcType=TIMESTAMP},
+            #{enableStatus,jdbcType=INTEGER}, #{productCategory.productCategoryId,jdbcType=INTEGER},
+            #{shop.shopId,jdbcType=INTEGER}
+        )
+    </insert>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+            p.product_id,
+            p.product_name,
+            p.product_desc,
+            p.img_addr,
+            p.normal_price,
+            p.promotion_price,
+            p.priority,
+            p.create_time,
+            p.last_edit_time,
+            p.enable_status,
+            pc.product_category_id,
+            pc.product_category_name,
+            s.shop_id,
+            s.owner_id,
+            s.shop_name,
+            tpi.priority,
+            tpi.create_time,
+            tpi.img_addr   as xqimg,
+            tpi.img_desc,
+            tpi.product_id as category_product_id,
+            tpi.product_img_id
+        from tb_product p
+            left join tb_product_category pc on p.product_category_id = pc.product_category_id
+            left join tb_shop s on p.shop_id = s.shop_id
+            left join tb_product_img tpi on p.product_id = tpi.product_id
+        where p.product_id = #{productId,jdbcType=INTEGER}
+        order by p.priority desc
+    </select>
+    <select id="queryProductList" resultType="Product">
+        select
+        p.product_id,
+        p.product_name,
+        p.product_desc,
+        p.img_addr,
+        p.normal_price,
+        p.promotion_price,
+        p.priority,
+        p.create_time,
+        p.last_edit_time,
+        p.enable_status,
+        p.shop_id,
+        p.product_category_id
+        from tb_product p
+        <where>
+            <if test="productCondition.productName!=null">
+                and p.product_name like concat('%',#{productCondition.productName},'%')
+            </if>
+            <if test="productCondition.enableStatus!=null">
+                and p.enable_status =#{productCondition.enableStatus}
+            </if>
+            <if test="productCondition.shop!=null and productCondition.shop.shopId!=null">
+                and p.shop_Id=#{productCondition.shop.shopId}
+            </if>
+            <if test="productCondition.productCategory!=null
+            and productCondition.productCategory.productCategoryId!=null">
+                and p.product_category_id=#{productCondition.productCategory.productCategoryId}
+            </if>
+        </where>
+        order by p.priority desc
+        limit #{rowIndex},#{pageSize}
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(1)
+        from tb_product p
+        <where>
+            <if test="productCondition.productName!=null">
+                and p.product_name like concat('%',#{productCondition.productName},'%')
+            </if>
+            <if test="productCondition.enableStatus!=null">
+                and p.enable_status =#{productCondition.enableStatus}
+            </if>
+            <if test="productCondition.shop!=null and productCondition.shop.shopId!=null">
+                and p.shop_id=#{productCondition.shop.shopId}
+            </if>
+            <if test="productCondition.productCategory!=null
+            and productCondition.productCategory.productCategoryId!=null">
+                and p.product_category_id=#{productCondition.productCategory.productCategoryId}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <bean id="entryptPlaceHolder" class="cn.lw.utils.EncryptPropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:db.properties</value>
+            </list>
+        </property>
+        <property name="fileEncoding" value="utf-8"/>
+        <property name="searchSystemEnvironment" value="false"/>
+    </bean>
+    <!--2.创建数据连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="password" value="${password}"/>
+        <property name="username" value="${username}"/>
+        <property name="url" value="${url}"/>
+        <property name="driverClassName" value="${driverClassName}"/>
+        <property name="maxActive" value="30"/>
+        <property name="minIdle" value="10"/>
+        <property name="defaultAutoCommit" value="false"/>
+    </bean>
+    <!--3.配置SessionFactory-->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis.cfg.xml"/>
+        <property name="mapperLocations" value="classpath:cn/lw/mapper/*Mapper.xml"/>
+        <property name="typeAliasesPackage" value="cn.lw.domain"></property>
+    </bean>
+    <!--4.配置事务管理器-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--5.事务模板,事务增强-->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--
+    基于注解的事务实现 5-6不写
+    加入基于注解的声明式事务
+    <tx:annotation-driven transaction-manager="txManager"/>
+    -->
+    <!--6.AOP配置-->
+    <aop:config>
+        <aop:pointcut id="crudPointCut" expression="execution(* cn.lw.services.*Service.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="crudPointCut"/>
+    </aop:config>
+    <!--注解扫描开启-->
+    <context:component-scan base-package="cn.lw.services"/>
+    <!--配置扫描Mapper接口的包-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.lw.mapper"></property>
+    </bean>
+</beans>

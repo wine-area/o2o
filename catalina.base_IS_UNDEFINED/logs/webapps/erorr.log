@@ -1,0 +1,21 @@
+2018-07-13 17:15:55.863 [main] ERROR cn.lw.services.Impl.WechatAuthSerivceImpl - insert personinfo error:
+### Error updating database.  Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'user_type' cannot be null
+### The error may involve cn.lw.mapper.PersonInfoMapper.insert-Inline
+### The error occurred while setting parameters
+### SQL: insert into tb_person_info (user_id, name, profile_img,        email, gender, enable_status,        user_type, create_time, last_edit_time       )     values (?, ?, ?,        ?, ?, ?,        ?, ?, ?       )
+### Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'user_type' cannot be null
+; ]; Column 'user_type' cannot be null; nested exception is java.sql.SQLIntegrityConstraintViolationException: Column 'user_type' cannot be null
+2018-07-13 17:15:55.888 [main] ERROR cn.lw.services.Impl.WechatAuthSerivceImpl - 用户注册失败:insert personinfo error:
+### Error updating database.  Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'user_type' cannot be null
+### The error may involve cn.lw.mapper.PersonInfoMapper.insert-Inline
+### The error occurred while setting parameters
+### SQL: insert into tb_person_info (user_id, name, profile_img,        email, gender, enable_status,        user_type, create_time, last_edit_time       )     values (?, ?, ?,        ?, ?, ?,        ?, ?, ?       )
+### Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'user_type' cannot be null
+; ]; Column 'user_type' cannot be null; nested exception is java.sql.SQLIntegrityConstraintViolationException: Column 'user_type' cannot be null
+2018-07-13 17:16:20.787 [main] ERROR cn.lw.services.Impl.WechatAuthSerivceImpl - 用户注册失败:
+### Error updating database.  Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'open_id' cannot be null
+### The error may involve cn.lw.mapper.WechatAuthMapper.insert-Inline
+### The error occurred while setting parameters
+### SQL: insert into tb_wechat_auth (wechat_auth_id, open_id, user_id,                                     create_time)         values (?, ?, ?,                 ?)
+### Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'open_id' cannot be null
+; ]; Column 'open_id' cannot be null; nested exception is java.sql.SQLIntegrityConstraintViolationException: Column 'open_id' cannot be null

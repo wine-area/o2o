@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lw.mapper.WechatAuthMapper">
+    <resultMap id="BaseResultMap" type="cn.lw.domain.WechatAuth">
+        <id column="wechat_auth_id" jdbcType="INTEGER" property="wechatAuthId"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <association property="user" column="user_id" javaType="PersonInfo">
+            <id column="user_id" property="userId"/>
+            <result column="name" property="name"/>
+            <result column="gender" property="gender"/>
+            <result column="email" property="email"/>
+            <result column="profile_img" property="profileImg"/>
+            <result column="user_type" property="userType"/>
+            <result column="enable_status" property="enableStatus"/>
+            <result column="person_create_time" property="createTime"/>
+            <result column="last_edit_time" property="lastEditTime"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tb_wechat_auth
+        where wechat_auth_id = #{wechatAuthId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="cn.lw.domain.WechatAuth"
+            useGeneratedKeys="true" keyProperty="wechatAuthId" keyColumn="wechat_auth_id">
+        insert into tb_wechat_auth (wechat_auth_id, open_id, user_id,
+                                    create_time)
+        values (#{wechatAuthId,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, #{user.userId,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.lw.domain.WechatAuth">
+        update tb_wechat_auth
+        set open_id     = #{openId,jdbcType=VARCHAR},
+            user_id     = #{user.userId,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP}
+        where wechat_auth_id = #{wechatAuthId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+            wechat_auth_id,
+            open_id,
+            user_id,
+            create_time
+        from tb_wechat_auth
+        where wechat_auth_id = #{wechatAuthId,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+            wechat_auth_id,
+            open_id,
+            user_id,
+            create_time
+        from tb_wechat_auth
+    </select>
+    <select id="queryWechatAuthByOpenId" resultMap="BaseResultMap">
+        select
+            twa.wechat_auth_id,
+            twa.open_id,
+            twa.create_time,
+            twa.user_id,
+            t.enable_status,
+            t.email,
+            t.gender,
+            t.last_edit_time,
+            t.user_id,
+            t.user_type,
+            t.name,
+            t.profile_img,
+            t.create_time as person_create_time
+        from tb_wechat_auth twa
+            left join tb_person_info t on twa.user_id = t.user_id
+        where open_id = #{openId};
+    </select>
+</mapper>

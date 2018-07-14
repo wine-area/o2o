@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lw.mapper.HeadLineMapper">
+    <resultMap id="BaseResultMap" type="cn.lw.domain.HeadLine">
+        <id column="line_id" jdbcType="INTEGER" property="lineId"/>
+        <result column="line_name" jdbcType="VARCHAR" property="lineName"/>
+        <result column="line_link" jdbcType="VARCHAR" property="lineLink"/>
+        <result column="line_img" jdbcType="VARCHAR" property="lineImg"/>
+        <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="enable_status" jdbcType="INTEGER" property="enableStatus"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="last_edit_time" jdbcType="TIMESTAMP" property="lastEditTime"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tb_head_line
+        where line_id = #{lineId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="cn.lw.domain.HeadLine">
+        insert into tb_head_line (line_id, line_name, line_link,
+                                  line_img, priority, enable_status,
+                                  create_time, last_edit_time)
+        values (#{lineId,jdbcType=INTEGER}, #{lineName,jdbcType=VARCHAR}, #{lineLink,jdbcType=VARCHAR},
+                #{linkImg,jdbcType=VARCHAR}, #{priority,jdbcType=INTEGER}, #{enableStatus,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{lastEditTime,jdbcType=TIMESTAMP})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.lw.domain.HeadLine">
+        update tb_head_line
+        set line_name      = #{lineName,jdbcType=VARCHAR},
+            line_link      = #{lineLink,jdbcType=VARCHAR},
+            line_img       = #{linkImg,jdbcType=VARCHAR},
+            priority       = #{priority,jdbcType=INTEGER},
+            enable_status  = #{enableStatus,jdbcType=INTEGER},
+            create_time    = #{createTime,jdbcType=TIMESTAMP},
+            last_edit_time = #{lastEditTime,jdbcType=TIMESTAMP}
+        where line_id = #{lineId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+            line_id,
+            line_name,
+            line_link,
+            line_img,
+            priority,
+            enable_status,
+            create_time,
+            last_edit_time
+        from tb_head_line
+        where line_id = #{lineId,jdbcType=INTEGER}
+        order by priority desc
+    </select>
+    <select id="queryHeadLine" resultType="cn.lw.domain.HeadLine">
+        select
+            line_id,
+            line_name,
+            line_link,
+            line_img,
+            priority,
+            enable_status,
+            create_time,
+            last_edit_time
+        from tb_head_line
+            <where>
+                <if test="headLineCondition.enableStatus!=null">
+                    and enable_status=#{headLineCondition.enableStatus}
+                </if>
+            </where>
+        order by priority desc
+    </select>
+</mapper>

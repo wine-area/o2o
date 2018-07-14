@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lw.mapper.ShopCategoryMapper">
+    <resultMap id="BaseResultMap" type="cn.lw.domain.ShopCategory">
+        <id column="shop_category_id" jdbcType="INTEGER" property="shopCategoryId"/>
+        <result column="shop_category_name" jdbcType="VARCHAR" property="shopCategoryName"/>
+        <result column="shop_category_desc" jdbcType="VARCHAR" property="shopCategoryDesc"/>
+        <result column="shop_category_img" jdbcType="VARCHAR" property="shopCategoryImg"/>
+        <result column="priority" jdbcType="INTEGER" property="priority"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="last_edit_time" jdbcType="TIMESTAMP" property="lastEditTime"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parent.shopCategoryId"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tb_shop_categroy
+        where shop_category_id = #{shopCategoryId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="cn.lw.domain.ShopCategory">
+        insert into tb_shop_categroy (shop_category_id, shop_category_name,
+                                      shop_category_desc, shop_category_img, priority,
+                                      create_time, last_edit_time, parent_id
+        )
+        values (#{shopCategoryId,jdbcType=INTEGER}, #{shopCategoryName,jdbcType=VARCHAR},
+                #{shopCategoryDesc,jdbcType=VARCHAR}, #{shopCategoryImg,jdbcType=VARCHAR}, #{priority,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{lastEditTime,jdbcType=TIMESTAMP},
+                #{parent.shopCategoryId,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="cn.lw.domain.ShopCategory">
+        update tb_shop_categroy
+        set shop_category_name = #{shopCategoryName,jdbcType=VARCHAR},
+            shop_category_desc = #{shopCategoryDesc,jdbcType=VARCHAR},
+            shop_category_img  = #{shopCategoryImg,jdbcType=VARCHAR},
+            priority           = #{priority,jdbcType=INTEGER},
+            create_time        = #{createTime,jdbcType=TIMESTAMP},
+            last_edit_time     = #{lastEditTime,jdbcType=TIMESTAMP},
+            parent_id          = #{parent.shopCategoryId,jdbcType=INTEGER}
+        where shop_category_id = #{shopCategoryId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+            shop_category_id,
+            shop_category_name,
+            shop_category_desc,
+            shop_category_img,
+            priority,
+            create_time,
+            last_edit_time,
+            parent_id
+        from tb_shop_category
+        where shop_category_id = #{shopCategoryId,jdbcType=INTEGER}
+        order by priority desc
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select shop_category_id, shop_category_name, shop_category_desc, shop_category_img,
+        priority, create_time, last_edit_time, parent_id
+        from tb_shop_category
+        <where>
+            <if test="ShopCategoryCondition==null">
+                and parent_id is null
+            </if>
+            <if test="ShopCategoryCondition!=null">
+                and parent_id is not null
+            </if>
+            <if test="ShopCategoryCondition!=null and ShopCategoryCondition.parent!=null">
+                and parent_id=#{ShopCategoryCondition.parent.shopCategoryId}
+            </if>
+        </where>
+        order by priority desc
+    </select>
+</mapper>

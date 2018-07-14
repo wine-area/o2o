@@ -1,0 +1,2 @@
+2018-07-14 16:01:26.242 [main] DEBUG cn.lw.utils.EncryptPropertyPlaceholderConfigurer - Loading properties file from class path resource [db.properties]
+2018-07-14 16:03:32.814 [main] DEBUG cn.lw.utils.EncryptPropertyPlaceholderConfigurer - Loading properties file from class path resource [db.properties]

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lw.mapper.ProductImgMapper">
+  <resultMap id="BaseResultMap" type="cn.lw.domain.ProductImg">
+    <id column="product_img_id" jdbcType="INTEGER" property="productImgId" />
+    <result column="img_addr" jdbcType="VARCHAR" property="imgAddr" />
+    <result column="img_desc" jdbcType="VARCHAR" property="imgDesc" />
+    <result column="priority" jdbcType="INTEGER" property="priority" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="product_id" jdbcType="INTEGER" property="productId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_product_img
+    where product_img_id = #{productImgId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByProductId" parameterType="int">
+    delete from tb_product_img
+    where product_id = #{productId}
+  </delete>
+  <insert id="insert" parameterType="cn.lw.domain.ProductImg">
+    insert into tb_product_img (product_img_id, img_addr, img_desc, 
+      priority, create_time, product_id
+      )
+    values (#{productImgId,jdbcType=INTEGER}, #{imgAddr,jdbcType=VARCHAR}, #{imgDesc,jdbcType=VARCHAR}, 
+      #{priority,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{productId,jdbcType=INTEGER}
+      )
+  </insert>
+    <insert id="batchInsertProductImg" parameterType="list">
+      insert into tb_product_img ( img_addr, img_desc,
+                                  priority, create_time, product_id
+      )
+      values
+        <foreach collection="list" item="productImg" index="index" separator=",">
+          (
+          #{productImg.imgAddr},
+          #{productImg.imgDesc},
+          #{productImg.priority},
+          #{productImg.createTime},
+          #{productImg.productId}
+          )
+        </foreach>
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.lw.domain.ProductImg">
+    update tb_product_img
+    set img_addr = #{imgAddr,jdbcType=VARCHAR},
+      img_desc = #{imgDesc,jdbcType=VARCHAR},
+      priority = #{priority,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      product_id = #{productId,jdbcType=INTEGER}
+    where product_img_id = #{productImgId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select product_img_id, img_addr, img_desc, priority, create_time, product_id
+    from tb_product_img
+    where product_img_id = #{productImgId,jdbcType=INTEGER}
+    order by priority desc
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select product_img_id, img_addr, img_desc, priority, create_time, product_id
+    from tb_product_img
+    order by priority desc
+  </select>
+</mapper>
